@@ -1,0 +1,408 @@
+2026-11-09 19:17:36.150 +07:00 [INF] Applying migrations / verifying database schema...
+2026-11-09 19:17:38.968 +07:00 [INF] Executed DbCommand (141ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [EcommerceDb];
+2026-11-09 19:17:39.004 +07:00 [INF] Executed DbCommand (31ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [EcommerceDb] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2026-11-09 19:17:39.019 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-11-09 19:17:39.063 +07:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Categories] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(100) NOT NULL,
+    [Description] nvarchar(500) NULL,
+    [IsActive] bit NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Categories] PRIMARY KEY ([Id])
+);
+2026-11-09 19:17:39.065 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Roles] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(50) NOT NULL,
+    [Description] nvarchar(255) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Roles] PRIMARY KEY ([Id])
+);
+2026-11-09 19:17:39.067 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Products] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(200) NOT NULL,
+    [Sku] nvarchar(50) NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [Price] decimal(18,2) NOT NULL,
+    [StockQuantity] int NOT NULL,
+    [ImageUrl] nvarchar(500) NULL,
+    [IsActive] bit NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [CategoryId] int NOT NULL,
+    CONSTRAINT [PK_Products] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Products_Categories_CategoryId] FOREIGN KEY ([CategoryId]) REFERENCES [Categories] ([Id]) ON DELETE NO ACTION
+);
+2026-11-09 19:17:39.069 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [Id] int NOT NULL IDENTITY,
+    [Username] nvarchar(50) NOT NULL,
+    [Email] nvarchar(150) NOT NULL,
+    [PasswordHash] nvarchar(500) NOT NULL,
+    [FullName] nvarchar(100) NOT NULL,
+    [PhoneNumber] nvarchar(20) NULL,
+    [IsActive] bit NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [RoleId] int NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Users_Roles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [Roles] ([Id]) ON DELETE NO ACTION
+);
+2026-11-09 19:17:39.071 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Orders] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderNumber] nvarchar(50) NOT NULL,
+    [UserId] int NOT NULL,
+    [OrderDate] datetime2 NOT NULL,
+    [TotalAmount] decimal(18,2) NOT NULL,
+    [Status] int NOT NULL,
+    [ShippingAddress] nvarchar(255) NOT NULL,
+    [PaymentMethod] nvarchar(50) NOT NULL,
+    [PaymentStatus] nvarchar(50) NOT NULL,
+    CONSTRAINT [PK_Orders] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Orders_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE NO ACTION
+);
+2026-11-09 19:17:39.073 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Reviews] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [ProductId] int NOT NULL,
+    [Rating] int NOT NULL,
+    [Comment] nvarchar(1000) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Reviews] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Reviews_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [Products] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Reviews_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([Id]) ON DELETE NO ACTION
+);
+2026-11-09 19:17:39.077 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrderDetails] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [ProductId] int NOT NULL,
+    [Quantity] int NOT NULL,
+    [UnitPrice] decimal(18,2) NOT NULL,
+    [SubTotal] decimal(18,2) NOT NULL,
+    CONSTRAINT [PK_OrderDetails] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_OrderDetails_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_OrderDetails_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [Products] ([Id]) ON DELETE NO ACTION
+);
+2026-11-09 19:17:39.078 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Categories_Name] ON [Categories] ([Name]);
+2026-11-09 19:17:39.080 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderDetails_OrderId] ON [OrderDetails] ([OrderId]);
+2026-11-09 19:17:39.081 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderDetails_ProductId] ON [OrderDetails] ([ProductId]);
+2026-11-09 19:17:39.082 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Orders_OrderNumber] ON [Orders] ([OrderNumber]);
+2026-11-09 19:17:39.083 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_UserId] ON [Orders] ([UserId]);
+2026-11-09 19:17:39.085 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Products_CategoryId] ON [Products] ([CategoryId]);
+2026-11-09 19:17:39.086 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Products_Sku] ON [Products] ([Sku]);
+2026-11-09 19:17:39.087 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Reviews_ProductId] ON [Reviews] ([ProductId]);
+2026-11-09 19:17:39.089 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Reviews_UserId] ON [Reviews] ([UserId]);
+2026-11-09 19:17:39.090 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Roles_Name] ON [Roles] ([Name]);
+2026-11-09 19:17:39.092 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Users_Email] ON [Users] ([Email]);
+2026-11-09 19:17:39.093 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Users_RoleId] ON [Users] ([RoleId]);
+2026-11-09 19:17:39.094 +07:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Users_Username] ON [Users] ([Username]);
+2026-11-09 19:17:39.107 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+CREATE OR ALTER PROCEDURE [dbo].[sp_CreateOrderWithStockDeduction]
+    @UserId INT,
+    @ShippingAddress NVARCHAR(255),
+    @PaymentMethod NVARCHAR(50),
+    @ItemsJson NVARCHAR(MAX),
+    @NewOrderId INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Id] = @UserId AND [IsActive] = 1)
+    BEGIN
+        RAISERROR(N'User with ID %d does not exist or is inactive.', 16, 1, @UserId);
+        RETURN;
+    END
+
+    CREATE TABLE #OrderItems (
+        [ProductId] INT,
+        [Quantity] INT
+    );
+
+    INSERT INTO #OrderItems ([ProductId], [Quantity])
+    SELECT [ProductId], [Quantity]
+    FROM OPENJSON(@ItemsJson)
+    WITH (
+        [ProductId] INT '$.ProductId',
+        [Quantity] INT '$.Quantity'
+    );
+
+    IF NOT EXISTS (SELECT 1 FROM #OrderItems)
+    BEGIN
+        IF OBJECT_ID('tempdb..#OrderItems') IS NOT NULL DROP TABLE #OrderItems;
+        RAISERROR(N'Order must contain at least one valid item.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF EXISTS (
+            SELECT 1 FROM #OrderItems oi
+            WHERE NOT EXISTS (SELECT 1 FROM [dbo].[Products] p WHERE p.[Id] = oi.[ProductId])
+        )
+        BEGIN
+            THROW 50001, N'One or more requested products do not exist.', 1;
+        END
+
+        DECLARE @InsufficientProduct NVARCHAR(200);
+        DECLARE @ReqQuantity INT;
+        DECLARE @AvailStock INT;
+
+        SELECT TOP 1
+            @InsufficientProduct = p.[Name],
+            @ReqQuantity = oi.[Quantity],
+            @AvailStock = p.[StockQuantity]
+        FROM #OrderItems oi
+        JOIN [dbo].[Products] p WITH (UPDLOCK, ROWLOCK) ON p.[Id] = oi.[ProductId]
+        WHERE p.[IsActive] = 0 OR p.[StockQuantity] < oi.[Quantity];
+
+        IF @InsufficientProduct IS NOT NULL
+        BEGIN
+            DECLARE @ErrorMessage NVARCHAR(500) = 
+                CONCAT(N'Product "', @InsufficientProduct, N'" does not have enough stock. Available: ', @AvailStock, N', Requested: ', @ReqQuantity);
+            THROW 50002, @ErrorMessage, 1;
+        END
+
+        DECLARE @CalculatedTotal DECIMAL(18, 2);
+        SELECT @CalculatedTotal = SUM(oi.[Quantity] * p.[Price])
+        FROM #OrderItems oi
+        JOIN [dbo].[Products] p ON p.[Id] = oi.[ProductId];
+
+        DECLARE @OrderNumber NVARCHAR(50) = 
+            CONCAT('ORD-', CONVERT(NVARCHAR(8), GETUTCDATE(), 112), '-', UPPER(SUBSTRING(CONVERT(NVARCHAR(36), NEWID()), 1, 8)));
+
+        INSERT INTO [dbo].[Orders] (
+            [OrderNumber],
+            [UserId],
+            [OrderDate],
+            [TotalAmount],
+            [Status],
+            [ShippingAddress],
+            [PaymentMethod],
+            [PaymentStatus]
+        )
+        VALUES (
+            @OrderNumber,
+            @UserId,
+            GETUTCDATE(),
+            @CalculatedTotal,
+            0,
+            @ShippingAddress,
+            @PaymentMethod,
+            N'Unpaid'
+        );
+
+        SET @NewOrderId = CAST(SCOPE_IDENTITY() AS INT);
+
+        INSERT INTO [dbo].[OrderDetails] (
+            [OrderId],
+            [ProductId],
+            [Quantity],
+            [UnitPrice],
+            [SubTotal]
+        )
+        SELECT 
+            @NewOrderId,
+            oi.[ProductId],
+            oi.[Quantity],
+            p.[Price],
+            (oi.[Quantity] * p.[Price])
+        FROM #OrderItems oi
+        JOIN [dbo].[Products] p ON p.[Id] = oi.[ProductId];
+
+        UPDATE p
+        SET p.[StockQuantity] = p.[StockQuantity] - oi.[Quantity]
+        FROM [dbo].[Products] p
+        JOIN #OrderItems oi ON oi.[ProductId] = p.[Id];
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
+        THROW;
+    END CATCH;
+
+    IF OBJECT_ID('tempdb..#OrderItems') IS NOT NULL
+        DROP TABLE #OrderItems;
+END;
+2026-11-09 19:17:39.109 +07:00 [INF] Stored procedure [dbo].[sp_CreateOrderWithStockDeduction] successfully registered.
+2026-11-09 19:17:39.221 +07:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Roles] AS [r]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-11-09 19:17:39.235 +07:00 [INF] Seeding Roles...
+2026-11-09 19:17:39.330 +07:00 [INF] Executed DbCommand (18ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 255), @p2='?' (Size = 50), @p3='?' (DbType = DateTime2), @p4='?' (Size = 255), @p5='?' (Size = 50), @p6='?' (DbType = DateTime2), @p7='?' (Size = 255), @p8='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+MERGE [Roles] USING (
+VALUES (@p0, @p1, @p2, 0),
+(@p3, @p4, @p5, 1),
+(@p6, @p7, @p8, 2)) AS i ([CreatedAt], [Description], [Name], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([CreatedAt], [Description], [Name])
+VALUES (i.[CreatedAt], i.[Description], i.[Name])
+OUTPUT INSERTED.[Id], i._Position;
+2026-11-09 19:17:39.384 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [r].[Id], [r].[CreatedAt], [r].[Description], [r].[Name]
+FROM [Roles] AS [r]
+WHERE [r].[Name] = N'Admin'
+2026-11-09 19:17:39.394 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [r].[Id], [r].[CreatedAt], [r].[Description], [r].[Name]
+FROM [Roles] AS [r]
+WHERE [r].[Name] = N'Staff'
+2026-11-09 19:17:39.402 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [r].[Id], [r].[CreatedAt], [r].[Description], [r].[Name]
+FROM [Roles] AS [r]
+WHERE [r].[Name] = N'Customer'
+2026-11-09 19:17:39.409 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-11-09 19:17:39.413 +07:00 [INF] Seeding default users...
+2026-11-09 19:17:39.994 +07:00 [INF] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 150), @p2='?' (Size = 100), @p3='?' (DbType = Boolean), @p4='?' (Size = 500), @p5='?' (Size = 20), @p6='?' (DbType = Int32), @p7='?' (Size = 50), @p8='?' (DbType = DateTime2), @p9='?' (Size = 150), @p10='?' (Size = 100), @p11='?' (DbType = Boolean), @p12='?' (Size = 500), @p13='?' (Size = 20), @p14='?' (DbType = Int32), @p15='?' (Size = 50), @p16='?' (DbType = DateTime2), @p17='?' (Size = 150), @p18='?' (Size = 100), @p19='?' (DbType = Boolean), @p20='?' (Size = 500), @p21='?' (Size = 20), @p22='?' (DbType = Int32), @p23='?' (Size = 50)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+MERGE [Users] USING (
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, 0),
+(@p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, 1),
+(@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, 2)) AS i ([CreatedAt], [Email], [FullName], [IsActive], [PasswordHash], [PhoneNumber], [RoleId], [Username], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([CreatedAt], [Email], [FullName], [IsActive], [PasswordHash], [PhoneNumber], [RoleId], [Username])
+VALUES (i.[CreatedAt], i.[Email], i.[FullName], i.[IsActive], i.[PasswordHash], i.[PhoneNumber], i.[RoleId], i.[Username])
+OUTPUT INSERTED.[Id], i._Position;
+2026-11-09 19:17:40.000 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Categories] AS [c]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-11-09 19:17:40.002 +07:00 [INF] Seeding Categories...
+2026-11-09 19:17:40.015 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 500), @p2='?' (DbType = Boolean), @p3='?' (Size = 100), @p4='?' (DbType = DateTime2), @p5='?' (Size = 500), @p6='?' (DbType = Boolean), @p7='?' (Size = 100), @p8='?' (DbType = DateTime2), @p9='?' (Size = 500), @p10='?' (DbType = Boolean), @p11='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+MERGE [Categories] USING (
+VALUES (@p0, @p1, @p2, @p3, 0),
+(@p4, @p5, @p6, @p7, 1),
+(@p8, @p9, @p10, @p11, 2)) AS i ([CreatedAt], [Description], [IsActive], [Name], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([CreatedAt], [Description], [IsActive], [Name])
+VALUES (i.[CreatedAt], i.[Description], i.[IsActive], i.[Name])
+OUTPUT INSERTED.[Id], i._Position;
+2026-11-09 19:17:40.022 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[Name]
+FROM [Categories] AS [c]
+WHERE [c].[Name] = N'Laptops & Computers'
+2026-11-09 19:17:40.027 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[Name]
+FROM [Categories] AS [c]
+WHERE [c].[Name] = N'Smartphones & Tablets'
+2026-11-09 19:17:40.032 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[IsActive], [c].[Name]
+FROM [Categories] AS [c]
+WHERE [c].[Name] = N'Audio & Accessories'
+2026-11-09 19:17:40.036 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Products] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-11-09 19:17:40.038 +07:00 [INF] Seeding Products...
+2026-11-09 19:17:40.062 +07:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime2), @p2='?' (Size = 4000), @p3='?' (Size = 500), @p4='?' (DbType = Boolean), @p5='?' (Size = 200), @p6='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p7='?' (Size = 50), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = DateTime2), @p11='?' (Size = 4000), @p12='?' (Size = 500), @p13='?' (DbType = Boolean), @p14='?' (Size = 200), @p15='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p16='?' (Size = 50), @p17='?' (DbType = Int32), @p18='?' (DbType = Int32), @p19='?' (DbType = DateTime2), @p20='?' (Size = 4000), @p21='?' (Size = 500), @p22='?' (DbType = Boolean), @p23='?' (Size = 200), @p24='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p25='?' (Size = 50), @p26='?' (DbType = Int32), @p27='?' (DbType = Int32), @p28='?' (DbType = DateTime2), @p29='?' (Size = 4000), @p30='?' (Size = 500), @p31='?' (DbType = Boolean), @p32='?' (Size = 200), @p33='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p34='?' (Size = 50), @p35='?' (DbType = Int32), @p36='?' (DbType = Int32), @p37='?' (DbType = DateTime2), @p38='?' (Size = 4000), @p39='?' (Size = 500), @p40='?' (DbType = Boolean), @p41='?' (Size = 200), @p42='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p43='?' (Size = 50), @p44='?' (DbType = Int32), @p45='?' (DbType = Int32), @p46='?' (DbType = DateTime2), @p47='?' (Size = 4000), @p48='?' (Size = 500), @p49='?' (DbType = Boolean), @p50='?' (Size = 200), @p51='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p52='?' (Size = 50), @p53='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+MERGE [Products] USING (
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, 0),
+(@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, 1),
+(@p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, 2),
+(@p27, @p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, 3),
+(@p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43, @p44, 4),
+(@p45, @p46, @p47, @p48, @p49, @p50, @p51, @p52, @p53, 5)) AS i ([CategoryId], [CreatedAt], [Description], [ImageUrl], [IsActive], [Name], [Price], [Sku], [StockQuantity], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([CategoryId], [CreatedAt], [Description], [ImageUrl], [IsActive], [Name], [Price], [Sku], [StockQuantity])
+VALUES (i.[CategoryId], i.[CreatedAt], i.[Description], i.[ImageUrl], i.[IsActive], i.[Name], i.[Price], i.[Sku], i.[StockQuantity])
+OUTPUT INSERTED.[Id], i._Position;
+2026-11-09 19:17:40.071 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Reviews] AS [r]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-11-09 19:17:40.077 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[CreatedAt], [u].[Email], [u].[FullName], [u].[IsActive], [u].[PasswordHash], [u].[PhoneNumber], [u].[RoleId], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = N'customer'
+2026-11-09 19:17:40.084 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[Id], [p].[CategoryId], [p].[CreatedAt], [p].[Description], [p].[ImageUrl], [p].[IsActive], [p].[Name], [p].[Price], [p].[Sku], [p].[StockQuantity]
+FROM [Products] AS [p]
+WHERE [p].[Sku] = N'MBP-16-M3MAX'
+2026-11-09 19:17:40.101 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (Size = 1000), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Reviews] ([Comment], [CreatedAt], [ProductId], [Rating], [UserId])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2026-11-09 19:17:40.104 +07:00 [INF] Database seeding completed successfully.
+2026-11-09 19:17:40.105 +07:00 [INF] Database successfully initialized and seeded.
+2026-11-09 19:17:40.164 +07:00 [INF] Starting E-Commerce Web API application...
+2026-11-09 19:17:40.175 +07:00 [INF] User profile is available. Using 'C:\Users\Hunter\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-11-09 19:17:40.185 +07:00 [INF] Creating key {8ae53eed-1d1a-45cc-807a-274d8ce9abc5} with creation date 2026-11-09 12:17:40Z, activation date 2026-11-09 12:17:40Z, and expiration date 2027-02-07 12:17:40Z.
+2026-11-09 19:17:40.204 +07:00 [INF] Writing data to file 'C:\Users\Hunter\AppData\Local\ASP.NET\DataProtection-Keys\key-8ae53eed-1d1a-45cc-807a-274d8ce9abc5.xml'.
+2026-11-09 19:17:40.257 +07:00 [INF] Now listening on: http://localhost:5020
+2026-11-09 19:17:40.259 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-11-09 19:17:40.260 +07:00 [INF] Hosting environment: Development
+2026-11-09 19:17:40.261 +07:00 [INF] Content root path: C:\Users\Hunter\.gemini\antigravity\scratch\EcommerceBackend\Ecommerce.WebApi
+2026-11-09 19:17:59.875 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/ - null null
+2026-11-09 19:17:59.916 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/ - 301 0 null 40.8081ms
+2026-11-09 19:17:59.924 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/index.html - null null
+2026-11-09 19:18:00.001 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/index.html - 200 null text/html;charset=utf-8 77.8098ms
+2026-11-09 19:18:00.026 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/swagger-ui.css - null null
+2026-11-09 19:18:00.027 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/swagger-ui-standalone-preset.js - null null
+2026-11-09 19:18:00.027 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/swagger-ui-bundle.js - null null
+2026-11-09 19:18:00.048 +07:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-11-09 19:18:00.048 +07:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-11-09 19:18:00.051 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/swagger-ui.css - 200 152034 text/css 24.94ms
+2026-11-09 19:18:00.052 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/swagger-ui-standalone-preset.js - 200 230280 text/javascript 25.4422ms
+2026-11-09 19:18:00.061 +07:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-11-09 19:18:00.063 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/swagger-ui-bundle.js - 200 1456926 text/javascript 36.3614ms
+2026-11-09 19:18:00.142 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/swagger/v1/swagger.json - null null
+2026-11-09 19:18:00.156 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5020/favicon-32x32.png - null null
+2026-11-09 19:18:00.159 +07:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-11-09 19:18:00.161 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/favicon-32x32.png - 200 628 image/png 5.3285ms
+2026-11-09 19:18:00.293 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5020/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 150.368ms

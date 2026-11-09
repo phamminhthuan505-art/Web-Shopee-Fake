@@ -1,0 +1,13 @@
+<Project>
+  <ItemGroup>
+    <KnownFrameworkReference Update="Microsoft.NETCore.App">
+      <TargetingPackVersion>8.0.14</TargetingPackVersion>
+    </KnownFrameworkReference>
+    <KnownFrameworkReference Update="Microsoft.AspNetCore.App">
+      <TargetingPackVersion>8.0.14</TargetingPackVersion>
+    </KnownFrameworkReference>
+    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App">
+      <TargetingPackVersion>8.0.14</TargetingPackVersion>
+    </KnownFrameworkReference>
+  </ItemGroup>
+</Project>
