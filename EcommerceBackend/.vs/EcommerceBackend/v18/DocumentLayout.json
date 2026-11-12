@@ -1,0 +1,85 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{11D89E98-5290-469C-AF3B-04611596CC6B}|Ecommerce.WebApi\\Ecommerce.WebApi.csproj|c:\\backend\\web-shopee-fake\\ecommercebackend\\ecommerce.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{11D89E98-5290-469C-AF3B-04611596CC6B}|Ecommerce.WebApi\\Ecommerce.WebApi.csproj|solutionrelative:ecommerce.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{79798B03-89A2-420D-8E25-82705D94DFE9}|Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj|c:\\backend\\web-shopee-fake\\ecommercebackend\\ecommerce.infrastructure\\ecommerce.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{79798B03-89A2-420D-8E25-82705D94DFE9}|Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj|solutionrelative:ecommerce.infrastructure\\ecommerce.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7C0509-C0CF-4DB2-9648-B58B8DD2F004}|Ecommerce.Domain\\Ecommerce.Domain.csproj|c:\\backend\\web-shopee-fake\\ecommercebackend\\ecommerce.domain\\ecommerce.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{8A7C0509-C0CF-4DB2-9648-B58B8DD2F004}|Ecommerce.Domain\\Ecommerce.Domain.csproj|solutionrelative:ecommerce.domain\\ecommerce.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.WebApi\\appsettings.json",
+              "RelativeDocumentMoniker": "Ecommerce.WebApi\\appsettings.json",
+              "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.WebApi\\appsettings.json",
+              "RelativeToolTip": "Ecommerce.WebApi\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-12T15:45:06.299Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Ecommerce.Infrastructure",
+              "DocumentMoniker": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
+              "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
+              "RelativeToolTip": "Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-11-12T15:16:48.072Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Ecommerce.Domain",
+              "DocumentMoniker": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Domain\\Ecommerce.Domain.csproj",
+              "RelativeDocumentMoniker": "Ecommerce.Domain\\Ecommerce.Domain.csproj",
+              "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Domain\\Ecommerce.Domain.csproj",
+              "RelativeToolTip": "Ecommerce.Domain\\Ecommerce.Domain.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-11-12T15:15:56.435Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 88,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\bin\Debug\net8.0\Ecommerce.Domain.deps.json
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\bin\Debug\net8.0\Ecommerce.Domain.dll
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\bin\Debug\net8.0\Ecommerce.Domain.pdb
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.AssemblyInfoInputs.cache
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.AssemblyInfo.cs
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.csproj.CoreCompileInputs.cache
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.sourcelink.json
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.dll
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\refint\Ecommerce.Domain.dll
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerce.Domain.pdb
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\ref\Ecommerce.Domain.dll
+C:\BackEnd\Web-Shopee-Fake\EcommerceBackend\Ecommerce.Domain\obj\Debug\net8.0\Ecommerc.9B51F420.Up2Date

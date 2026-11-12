@@ -10,18 +10,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Serilog Configuration (Console + Daily Rolling File in logs/)
+// 1. Serilog Configuration (Console + Daily Rolling File in logs/ with CorrelationId enrichment)
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .Enrich.FromLogContext()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}")
     .WriteTo.File(
         path: "logs/ecommerce-.log",
         rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+        retainedFileCountLimit: 30,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -75,7 +79,7 @@ builder.Services.AddControllers()
                 .SelectMany(e => e.Value!.Errors.Select(err => err.ErrorMessage))
                 .ToList();
 
-            var response = ApiResponse<object>.Fail("Validation failed for input data.", errors);
+            var response = ApiResponse<object>.Fail("Dữ liệu đầu vào không hợp lệ.", errors);
             return new BadRequestObjectResult(response);
         };
     });
@@ -88,16 +92,16 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "E-Commerce Backend API",
         Version = "v1",
-        Description = "Enterprise E-Commerce API with Clean Architecture, EF Core Code-First, Stored Procedure Transaction, JWT RBAC, Serilog, and Local IIS support."
+        Description = "Hệ thống E-Commerce API chuẩn Clean Architecture: EF Core 8.0 Code-First, Stored Procedure Transaction (ACID), JWT Authentication + RBAC (Admin/Staff/Customer), Serilog Structured Logging, Global Exception Middleware và hỗ trợ Host Local IIS."
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Description = "Dán trực tiếp chuỗi Access Token (JWT eyJ...):",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT"
     });
 
@@ -140,29 +144,36 @@ using (var scope = app.Services.CreateScope())
         var db = services.GetRequiredService<ApplicationDbContext>();
         
         // Ensure Database is created & updated
-        logger.LogInformation("Applying migrations / verifying database schema...");
+        logger.LogInformation("Đang kiểm tra schema và khởi tạo cơ sở dữ liệu...");
         await db.Database.EnsureCreatedAsync();
 
         // Seed initial roles, admin user, products and stored procedure
         var seeder = services.GetRequiredService<DatabaseSeeder>();
         await seeder.SeedAsync();
-        logger.LogInformation("Database successfully initialized and seeded.");
+        logger.LogInformation("Cơ sở dữ liệu đã sẵn sàng và được nạp dữ liệu mẫu thành công.");
     }
     catch (Exception ex)
     {
-        logger.LogWarning("Database initialization skipped or encountered warning: {Message}. (Will connect when SQL Server is running).", ex.Message);
+        logger.LogWarning("Khởi tạo database bỏ qua hoặc có cảnh báo: {Message}. (Sẽ tự động kết nối lại khi SQL Server online).", ex.Message);
     }
 }
 
-// 8. HTTP Pipeline Configuration
+// 8. HTTP Pipeline Configuration (Thứ tự Middlewares chuẩn)
+// 8.1 Gắn mã tương quan CorrelationId cho mỗi request
+app.UseMiddleware<CorrelationIdMiddleware>();
+
+// 8.2 Ghi log HTTP Request với Serilog (tự động đính kèm CorrelationId, URL, Status code, Time)
+app.UseSerilogRequestLogging();
+
+// 8.3 Xử lý ngoại lệ toàn cục tập trung
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// Enable Swagger in all environments (supports Local IIS debugging and demo)
+// 8.4 Swagger UI tại root URL (tiện test trên trình duyệt hoặc IIS)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "E-Commerce API v1");
-    c.RoutePrefix = string.Empty; // Serves Swagger UI at application root URL: http://localhost:[port]/
+    c.RoutePrefix = string.Empty; // Truy cập Swagger tại http://localhost:[port]/
 });
 
 app.UseCors("AllowAll");
@@ -174,12 +185,12 @@ app.MapControllers();
 
 try
 {
-    Log.Information("Starting E-Commerce Web API application...");
+    Log.Information("Khởi động ứng dụng E-Commerce Web API thành công...");
     app.Run();
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Application terminated unexpectedly.");
+    Log.Fatal(ex, "Ứng dụng bị dừng đột ngột do lỗi nghiêm trọng.");
 }
 finally
 {
