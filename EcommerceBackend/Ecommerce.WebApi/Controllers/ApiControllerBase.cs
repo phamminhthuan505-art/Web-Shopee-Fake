@@ -27,4 +27,8 @@ public abstract class ApiControllerBase : ControllerBase
     protected string CurrentUserRole => User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
     protected bool IsAdmin => CurrentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+
+    protected bool IsStaff => CurrentUserRole.Equals("Staff", StringComparison.OrdinalIgnoreCase);
+
+    protected bool IsAdminOrStaff => IsAdmin || IsStaff;
 }

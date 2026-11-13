@@ -1,0 +1,122 @@
+### ==============================================================================
+### ECOMMERCE BACKEND API TEST SUITE (ORDERS & TRANSACTION)
+### ==============================================================================
+@baseUrl = https://localhost:7147
+# Note: Thay port tương ứng trên máy bạn nếu chạy http://localhost:5000 hoặc IIS
+
+### ------------------------------------------------------------------------------
+### 1. ĐĂNG NHẬP LẤY TOKEN (CUSTOMER & ADMIN)
+### ------------------------------------------------------------------------------
+
+### 1.1 Đăng nhập tài khoản Customer mặc định
+# @name loginCustomer
+POST {{baseUrl}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "customer",
+  "password": "Password123!"
+}
+
+### Lưu Customer Token
+@customerToken = {{loginCustomer.response.body.data.token}}
+
+
+### 1.2 Đăng nhập tài khoản Admin mặc định
+# @name loginAdmin
+POST {{baseUrl}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "Password123!"
+}
+
+### Lưu Admin Token
+@adminToken = {{loginAdmin.response.body.data.token}}
+
+
+### ------------------------------------------------------------------------------
+### 2. CHECKOUT QUA STORED PROCEDURE TRANSACTION (sp_CreateOrderWithStockDeduction)
+### ------------------------------------------------------------------------------
+
+### 2.1 Đặt hàng thành công (Ghi đồng thời Orders + OrderDetails và trừ tồn kho Products)
+# @name createOrder
+POST {{baseUrl}}/api/Orders/checkout
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "123 Đường Nguyễn Tri Phương, Quận 5, TP.HCM",
+  "paymentMethod": "COD",
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2
+    },
+    {
+      "productId": 2,
+      "quantity": 1
+    }
+  ]
+}
+
+### Lưu OrderId vừa tạo
+@createdOrderId = {{createOrder.response.body.data.id}}
+
+
+### 2.2 Đặt hàng thất bại: Test Transaction Rollback khi đặt vượt quá tồn kho (Stock)
+# Kỳ vọng: HTTP 400 Bad Request, Stored Proc THROW 50002, không bảng nào bị ghi nhận
+POST {{baseUrl}}/api/Orders/checkout
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "999 Đường Test Rollback, TP.HCM",
+  "paymentMethod": "COD",
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 99999
+    }
+  ]
+}
+
+
+### ------------------------------------------------------------------------------
+### 3. LỊCH SỬ ĐƠN HÀNG (MY-ORDERS & GET BY ID)
+### ------------------------------------------------------------------------------
+
+### 3.1 Khách hàng xem lịch sử các đơn hàng của chính mình (Chống IDOR qua CurrentUserId)
+GET {{baseUrl}}/api/Orders/my-orders
+Authorization: Bearer {{customerToken}}
+
+
+### 3.2 Khách hàng xem chi tiết 1 đơn hàng của mình
+GET {{baseUrl}}/api/Orders/{{createdOrderId}}
+Authorization: Bearer {{customerToken}}
+
+
+### 3.3 Admin xem toàn bộ đơn hàng trong hệ thống
+GET {{baseUrl}}/api/Orders
+Authorization: Bearer {{adminToken}}
+
+
+### ------------------------------------------------------------------------------
+### 4. CẬP NHẬT TRẠNG THÁI & HỦY ĐƠN HÀNG
+### ------------------------------------------------------------------------------
+
+### 4.1 Admin/Staff cập nhật trạng thái đơn hàng (Processing=1, Shipped=2, Delivered=3)
+PUT {{baseUrl}}/api/Orders/{{createdOrderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": 1
+}
+
+
+### 4.2 Customer hủy đơn hàng Pending (Tự động hoàn trả tồn kho về Products)
+POST {{baseUrl}}/api/Orders/{{createdOrderId}}/cancel
+Authorization: Bearer {{customerToken}}
+

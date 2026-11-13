@@ -36,7 +36,7 @@
               "RelativeDocumentMoniker": "Ecommerce.WebApi\\appsettings.json",
               "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.WebApi\\appsettings.json",
               "RelativeToolTip": "Ecommerce.WebApi\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-11-12T15:45:06.299Z",
               "EditorCaption": ""
@@ -44,28 +44,26 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Ecommerce.Infrastructure",
+              "Title": "Ecommerce.Infrastructure.csproj",
               "DocumentMoniker": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
               "RelativeDocumentMoniker": "Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
               "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
               "RelativeToolTip": "Ecommerce.Infrastructure\\Ecommerce.Infrastructure.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-11-12T15:16:48.072Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-12T15:16:48.072Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Ecommerce.Domain",
+              "Title": "Ecommerce.Domain.csproj",
               "DocumentMoniker": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Domain\\Ecommerce.Domain.csproj",
               "RelativeDocumentMoniker": "Ecommerce.Domain\\Ecommerce.Domain.csproj",
               "ToolTip": "C:\\BackEnd\\Web-Shopee-Fake\\EcommerceBackend\\Ecommerce.Domain\\Ecommerce.Domain.csproj",
               "RelativeToolTip": "Ecommerce.Domain\\Ecommerce.Domain.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-11-12T15:15:56.435Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-12T15:15:56.435Z"
             }
           ]
         },

@@ -65,9 +65,7 @@ public class OrdersController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetById(int id)
     {
-        int? filterUserId = IsAdmin || CurrentUserRole.Equals("Staff", StringComparison.OrdinalIgnoreCase) 
-            ? null 
-            : CurrentUserId;
+        int? filterUserId = IsAdminOrStaff ? null : CurrentUserId;
 
         var result = await _orderService.GetOrderByIdAsync(id, filterUserId);
         return Ok(ApiResponse<OrderDto>.Ok(result));

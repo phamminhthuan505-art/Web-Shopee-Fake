@@ -1,5 +1,7 @@
+using Ecommerce.Application.Common.Models;
 using Ecommerce.Application.DTOs.Category;
 using Ecommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.WebApi.Controllers;
@@ -13,41 +15,76 @@ public class CategoriesController : ApiControllerBase
         _categoryService = categoryService;
     }
 
+    /// <summary>
+    /// Lấy danh sách toàn bộ danh mục sản phẩm (Công khai cho khách xem hàng)
+    /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<CategoryDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
     {
         var categories = await _categoryService.GetAllAsync();
-        return Ok(categories);
+        return Ok(ApiResponse<IEnumerable<CategoryDto>>.Ok(categories));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDto>> GetById(int id)
+    /// <summary>
+    /// Xem chi tiết một danh mục theo ID (Công khai)
+    /// </summary>
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id)
     {
         var category = await _categoryService.GetByIdAsync(id);
-        if (category == null) return NotFound();
-        return Ok(category);
+        return Ok(ApiResponse<CategoryDto>.Ok(category));
     }
 
+    /// <summary>
+    /// Tạo danh mục mới (Chỉ dành cho Admin và Staff)
+    /// </summary>
     [HttpPost]
-    public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
+    [Authorize(Roles = "Admin,Staff")]
+    [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
     {
         var created = await _categoryService.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, 
+            ApiResponse<CategoryDto>.Ok(created, "Tạo danh mục mới thành công."));
     }
 
-    [HttpPut("{id}")]
+    /// <summary>
+    /// Cập nhật thông tin danh mục (Chỉ dành cho Admin và Staff)
+    /// </summary>
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
+    [ProducesResponseType(typeof(ApiResponse<CategoryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
     {
-        var success = await _categoryService.UpdateAsync(id, dto);
-        if (!success) return NotFound();
-        return NoContent();
+        var updated = await _categoryService.UpdateAsync(id, dto);
+        return Ok(ApiResponse<CategoryDto>.Ok(updated, "Cập nhật danh mục thành công."));
     }
 
-    [HttpDelete("{id}")]
+    /// <summary>
+    /// Xóa danh mục theo ID (Chỉ dành cho Admin và Staff, chặn xóa nếu còn sản phẩm)
+    /// </summary>
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,Staff")]
+    [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Delete(int id)
     {
-        var success = await _categoryService.DeleteAsync(id);
-        if (!success) return NotFound();
-        return NoContent();
+        await _categoryService.DeleteAsync(id);
+        return Ok(ApiResponse<bool>.Ok(true, "Xóa danh mục thành công."));
     }
 }
